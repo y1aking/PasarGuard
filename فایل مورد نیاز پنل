@@ -1,0 +1,49 @@
+python /code/pasarguard-cli.py generate-temp-key
+-----------
+PaSarGuard2026!
+--------------
+SERVICE_PORT=62050
+NODE_HOST=0.0.0.0
+API_KEY=8e2f4d91-3a7c-4b5e-9d16-c0a7f3e8b264
+------------
+= /app/certs
+---------
+= sleep infinity  اگر کرش کرد
+----------
+= apk add --no-cache openssl 2>/dev/null || (sed -i 's/https/http/g' /etc/apk/repositories && apk update && apk add --no-cache openssl)
+--------------
+= mkdir -p /app/certs
+----------------
+cat > /tmp/san.cnf << 'EOF'
+[req]
+distinguished_name = req_distinguished_name
+x509_extensions = v3_req
+prompt = no
+
+[req_distinguished_name]
+CN = PasarGuardNode
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = pasarguard-node.railway.internal
+DNS.2 = localhost
+EOF
+
+openssl req -x509 -newkey rsa:2048 -nodes -days 3650 \
+  -keyout /app/certs/ssl_key.pem \
+  -out /app/certs/ssl_cert.pem \
+  -config /tmp/san.cnf -extensions v3_req
+
+---------------
+ = cat /app/certs/ssl_cert.pem
+-----------------
+خاموش کردن sleep infinity
+----------------
+وصل کردن نود  
+Node Address: pasarguard-node.railway.internal
+Node Port: 62050
+API Key: 8e2f4d91-3a7c-4b5e-9d16-c0a7f3e8b264
+Certificate: همون گواهی که مرحله قبل ساختیم
+-----------------------
